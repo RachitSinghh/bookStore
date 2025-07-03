@@ -87,22 +87,26 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    //checks the guest list(the request body) for an email and password, if you forget your invite(left a field blank), you're not getting in.
 
     if (!email || !password)
       return res.status(400).json({ message: "All fields are required" });
+    // No email or password ? The bouncer sends you home with a 400 error and a stern message
 
     // check if user exists
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    //checks the database for you username. if you're not on the list you get the "Invalid credentials" treatment.
 
     // check if password is correct
     const isPasswordCorrect = await user.comparePassword(password);
     if (!isPasswordCorrect)
       return res.status(400).json({ message: "Invalid credentials" });
+    // even if your name's on the the list, you need the secret handshake(correct password). Mess it up? Back on the sidewalk
 
     // generate token
     const token = generatetoken(user._id);
-
+    // if you pass all checks, you get a VIP wristband(JWT token) so you can come and go as you please,
     res.status(200).json({
       token,
       user: {
@@ -112,9 +116,11 @@ router.post("/login", async (req, res) => {
         profileImage: user.profileImage,
       },
     });
+    // the bouncer hands you your token and a little info card about yourself. 
   } catch (error) {
     console.log("Error in login route", error);
-    res.status(500).json({message: "Interval server error"});
+    res.status(500).json({ message: "Interval server error" });
+    // if anything goes wrong, the bouncer shrugs, logs the problem, and tells you there's an "Interval server error", (typo: should be "Internal")
   }
 });
 
