@@ -107,6 +107,35 @@ router.get("/user", protectRoute, async (req, res) => {
   }
 });
 
+// Find books by genre(case-insensitive)
+router.get("/genre/:genre", protectRoute, async (req, res) => {
+  try {
+    const genreParam = req.params.genre;
+    // Find books where genre match (case-insensitive)
+    const books = await Book.find({
+      genre: { $regex: new RegExp(`^${genreParam}`, "i") },
+    })
+      .sort({ createdAt: -1 })
+      .populate("user", "username profileImage");
+
+    // if no books found for this genre
+    if (books.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No books found for genre: ${genreParam}` });
+    }
+
+    res.json({
+      genre: genreParam,
+      count: books.length,
+      books: books,
+    });
+  } catch (error) {
+    console.log("Error finding book by genre", error)
+    res.status(500).json({ message: "Internval server error" });
+  }
+});
+
 // Delete a book - only the owner can do this!
 // It's like removing your own post from the party wall.
 router.delete("/:id", protectRoute, async (req, res) => {
