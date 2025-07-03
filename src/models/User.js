@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
     type: String, 
     default: ""
   }
-})
+},{timestamps: true})
 
 // hash password before saving user to db
 //pre function is used to define middleware that runs before certain actions (like saving or validating a document
@@ -36,6 +36,12 @@ userSchema.pre("save", async function(next){
 
   next(); // once you've called we call the next function 
 })
+
+
+// compare password function 
+userSchema.methods.comparePassword = async function(userPassword){
+  return await bcrypt.compare(userPassword, this.password); 
+}
 
 const User = mongoose.model("User", userSchema);
 
