@@ -33,3 +33,76 @@ A[start login process]
 --> B[Fill login form] --> C[check required Fields] --> D[Submit credentials] --> E[Find User by email] --> 1[User found] --> F[Compare passoword] -->2[passowrd match] --> G[Generate JWT] --> H[Sent Token and account info] --> I[Store token] --> J[Logged In succesful]
 ```
 
+# How to Run BookStore on Your Own Machine 🚀
+
+Follow these steps to get the BookStore app running locally:
+
+---
+
+## 1. Clone the Repository
+
+```bash
+git clone <your-repo-url>
+cd bookStore
+```
+
+---
+
+## 2. Install Dependencies
+
+```bash
+npm install
+```
+
+---
+
+## 3. Set Up Environment Variables
+
+- Create a `.env` file in the root directory.
+- Add the following (replace values as needed):
+
+```env
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_super_secret_key
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+```
+
+---
+
+## 4. Start the Server
+
+```bash
+npm start
+```
+or (if you want auto-reload on changes)
+```bash
+npm run dev
+```
+
+---
+
+## 5. Test the API
+
+- The server should be running at: [http://localhost:3000](http://localhost:3000)
+- Use [Postman](https://www.postman.com/) or [curl](https://curl.se/) to test the endpoints.
+- See `documentation.md` for detailed API testing instructions.
+
+---
+
+## 6. (Optional) Seed the Database
+
+If you have a script to seed initial data, run it as described in your project.
+
+---
+
+## 7. You're Ready!
+
+Start registering users, logging in, and adding books!  
+If you get stuck, check your terminal for errors or review your `.env` settings.
+
+---
+
+**Happy coding and happy reading! 📚**

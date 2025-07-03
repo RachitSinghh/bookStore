@@ -8,12 +8,18 @@ router.post("/", protectRoute, async (req, res) => {
   try {
     const { title, caption, rating, image, author, genre } = req.body;
 
-    if (!title || !caption || !rating || !image || !author || !genre) {
+    if (!title || !caption || !rating || !author || !genre) {
       return res.status(400).json({ message: "Please provide all fields" });
     }
     // upload the image to cloudinary
-    const uploadResponse = await cloudinary.uploader.upload(image);
-    const imageUrl = uploadResponse.secure_url;
+
+    let imageUrl = null; // Default to null if no image
+
+    // Only upload to cloudinary if image is provided
+    if (image) {
+      const uploadResponse = await cloudinary.uploader.upload(image);
+      imageUrl = uploadResponse.secure_url;
+    }
     // save to mongodb
 
     const newBook = new Book({
@@ -89,23 +95,24 @@ router.get("/", protectRoute, async (req, res) => {
   */
 });
 
-
 // get recommeded books by the logged in user
-router.get("/user", protectRoute, async(req,res) =>{
-  try{
-    const books = await Book.find({user: req.user._id}).sort({createdAT: -1});
+router.get("/user", protectRoute, async (req, res) => {
+  try {
+    const books = await Book.find({ user: req.user._id }).sort({
+      createdAT: -1,
+    });
     res.json(books);
-  }catch(error){
-    res.status(500).json({message: "Server error"});
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
-})
+});
 
 // Delete a book - only the owner can do this!
 // It's like removing your own post from the party wall.
 router.delete("/:id", protectRoute, async (req, res) => {
   try {
     // 1. Find the book by its ID (the one you want to kick out)
-    const book = await Book.findbyId(req.params.id);
+    const book = await Book.findById(req.params.id);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
     // 2. Make sure the user trying to delete is the book's owner
