@@ -133,7 +133,11 @@ Returns books created by the logged-in user.
 
 ---
 
-## 6. Delete a Book
+## 6. Find book by Genre
+
+**GENRE** `/api/books/genre/Fiction`
+
+## 7. Delete a Book
 
 **DELETE** `/api/books/<book_id>`
 
