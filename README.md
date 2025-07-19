@@ -1,108 +1,192 @@
-# SIGNUP WORKFLOW
-```bash
-1. You type your username, email, and password into the signup form.
-2. The server makes sure you've filled out everything correctly(password long enough, valid email format). 
-3. When you tap "Sign Up," your information is sent to the server. 
-4. The server checks its database to see if you username or email is already begin used by someone else. 
-5. If everything is good, the server creates a new user account for you.
-6. The server generates a JWT (JSON Web Token), which is like a special digital ID card. 
-7. The server sends this token back to your app long with some basic info about your account. 
-8. The app stores this token on your device using something call AsyncStorage(Like a small cabinet for app data).
-9. You're now logged in and can use the app.
-```
+# BookStore API Testing Documentation
 
-```mermaid
-flowchart TD
-A[start] 
---> B[Fill Fom] --> C[Validate input] --> D[Send to server] --> E[check Database] -->  F[Create Account] --> G[Generate JWT] --> H[Sent Token] --> I[Store token] --> J[Logged In]
-```
-# LOGIN WORKFLOW
-```bash
-1. You type your email and password into the login form. 
-2. the app makes sure you've filled out all requried fields. 
-3. When you tap "Login" you database to find a user with your email address. 
-5. If found, the server checks its database to find a user with your email address. 
-6. If the passwords match, the server generates a JWT (JSON Web Token), which is like special digital ID card. 
-7. The server sends the token back to your app along with some basic infor about your account. 
-8. The app stores this token on your device using AsyncStorage(like a small file cabinet app data).
-9. You're now logged in and can use the app!
-```
-```mermaid
-flowchart TD
-A[start login process] 
---> B[Fill login form] --> C[check required Fields] --> D[Submit credentials] --> E[Find User by email] --> 1[User found] --> F[Compare passoword] -->2[passowrd match] --> G[Generate JWT] --> H[Sent Token and account info] --> I[Store token] --> J[Logged In succesful]
-```
+## Quick Start Option
 
-# How to Run BookStore on Your Own Machine 🚀
+**Don't want to set up locally?** Use our deployed API:
+🌐 **Base URL:** https://bookstore-w2bo.onrender.com
 
-Follow these steps to get the BookStore app running locally:
+You can test all endpoints directly using this URL instead of `http://localhost:3000`.
 
 ---
 
-## 1. Clone the Repository
+## Prerequisites (for local setup)
 
-```bash
-git clone <your-repo-url>
-cd bookStore
+- Node.js and npm installed
+- MongoDB connection string and JWT secret set in `.env`
+- Server running (default: `http://localhost:3000`)
+
+---
+
+## 1. Register a User
+
+**POST** `/api/auth/register`
+
+**Local:** `http://localhost:3000/api/auth/register`  
+**Deployed:** `https://bookstore-w2bo.onrender.com/api/auth/register`
+
+**Body (JSON):**
+```json
+{
+  "username": "bookworm",
+  "email": "bookworm@example.com",
+  "password": "supersecret"
+}
 ```
 
+**Response:**  
+Returns a JWT token and user info.
+
 ---
 
-## 2. Install Dependencies
+## 2. Login
 
-```bash
-npm install
+**POST** `/api/auth/login`
+
+**Local:** `http://localhost:3000/api/auth/login`  
+**Deployed:** `https://bookstore-w2bo.onrender.com/api/auth/login`
+
+**Body (JSON):**
+```json
+{
+  "email": "bookworm@example.com",
+  "password": "supersecret"
+}
 ```
 
+**Response:**  
+Returns a JWT token and user info.
+
 ---
 
-## 3. Set Up Environment Variables
+## 3. Add a Book
 
-- Create a `.env` file in the root directory.
-- Add the following (replace values as needed):
+**POST** `/api/books`
 
-```env
-PORT=3000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_super_secret_key
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+**Local:** `http://localhost:3000/api/books`  
+**Deployed:** `https://bookstore-w2bo.onrender.com/api/books`
+
+**Headers:**
+```
+Authorization: Bearer <your_token_here>
+Content-Type: application/json
 ```
 
----
-
-## 4. Start the Server
-
-```bash
-npm start
+**Body (JSON):**
+```json
+{
+  "title": "The Great Gatsby",
+  "caption": "A classic tale of wealth and mystery.",
+  "rating": 5,
+  "author": "F. Scott Fitzgerald",
+  "genre": "Fiction",
+  "image": "https://images.unsplash.com/photo-1512820790803-83ca734da794"
+}
 ```
-or (if you want auto-reload on changes)
-```bash
-npm run dev
+
+**Note:** The `image` field is optional.
+
+**Response:**  
+Returns the created book object.
+
+---
+
+## 4. Get All Books (with Pagination)
+
+**GET** `/api/books?page=1&limit=5`
+
+**Local:** `http://localhost:3000/api/books?page=1&limit=5`  
+**Deployed:** `https://bookstore-w2bo.onrender.com/api/books?page=1&limit=5`
+
+**Headers:**
+```
+Authorization: Bearer <your_token_here>
 ```
 
----
-
-## 5. Test the API
-
-- The server should be running at: [http://localhost:3000](http://localhost:3000)
-- Use [Postman](https://www.postman.com/) or [curl](https://curl.se/) to test the endpoints.
-- See `documentation.md` for detailed API testing instructions.
+**Response:**  
+Returns a paginated list of books.
 
 ---
 
-## 6. (Optional) Seed the Database
+## 5. Get Books Added by the Logged-in User
 
-If you have a script to seed initial data, run it as described in your project.
+**GET** `/api/books/user`
+
+**Local:** `http://localhost:3000/api/books/user`  
+**Deployed:** `https://bookstore-w2bo.onrender.com/api/books/user`
+
+**Headers:**
+```
+Authorization: Bearer <your_token_here>
+```
+
+**Response:**  
+Returns books created by the logged-in user.
 
 ---
 
-## 7. You're Ready!
+## 6. Get Books by Genre
 
-Start registering users, logging in, and adding books!  
-If you get stuck, check your terminal for errors or review your `.env` settings.
+**GET** `/api/books/genre/{genre}`
+
+**Local:** `http://localhost:3000/api/books/genre/Fantasy`  
+**Deployed:** `https://bookstore-w2bo.onrender.com/api/books/genre/Fantasy`
+
+**Headers:**
+```
+Authorization: Bearer <your_token_here>
+```
+
+**Response:**  
+Returns books matching the specified genre.
 
 ---
 
-**Happy coding and happy reading! 📚**
+## 7. Delete a Book
+
+**DELETE** `/api/books/<book_id>`
+
+**Local:** `http://localhost:3000/api/books/<book_id>`  
+**Deployed:** `https://bookstore-w2bo.onrender.com/api/books/<book_id>`
+
+**Headers:**
+```
+Authorization: Bearer <your_token_here>
+```
+
+**Response:**  
+Returns a success message if deleted.
+
+---
+
+## Testing Tips
+
+### Using the Deployed API
+- Replace all `localhost:3000` URLs with `https://bookstore-w2bo.onrender.com`
+- All endpoints work the same way
+- No local setup required!
+
+### Using Postman
+1. Create a new collection
+2. Set the base URL as either:
+   - Local: `http://localhost:3000`
+   - Deployed: `https://bookstore-w2bo.onrender.com`
+3. Add the Authorization header to protected routes
+
+### Authentication Flow
+1. Register a new user or login with existing credentials
+2. Copy the JWT token from the response
+3. Add `Authorization: Bearer <token>` to all protected routes
+
+---
+
+## Notes
+
+- All protected routes require the `Authorization` header with a valid JWT token.
+- The `image` field is optional when adding a book.
+- Use tools like [Postman](https://www.postman.com/) or [curl](https://curl.se/) for testing.
+- For JWT secret, you can generate one with:
+  ```bash
+  openssl rand -base64 32
+  ```
+
+---
